@@ -11,6 +11,7 @@ public class Netyoeur implements  Pretraiteur{
     @Override
     public List<String> traiter (Nom nom){
         String texte = nom.getNomBrut()
+                .replaceAll("-", " ")
                 .replaceAll("[^\\p{L}\\s]", "")   // garde uniquement lettres + espaces
                 .replaceAll("\\s+", " ")
                 .trim()
