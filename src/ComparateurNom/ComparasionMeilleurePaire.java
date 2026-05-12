@@ -21,7 +21,7 @@ public class ComparasionMeilleurePaire implements ComparateurNom {
             for (String t2 : tokens2) {
                 bestMatch = Math.max(bestMatch, comparateurChaine.comparer(t1, t2));
             }
-            totalMeilleurscore += bestMatch; // ← was "besmatcht" (typo)
+            totalMeilleurscore += bestMatch; 
         }
         return totalMeilleurscore / tokens1.size();
     }
