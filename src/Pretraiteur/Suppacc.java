@@ -1,30 +1,24 @@
 package kyc.Pretraitement;
+
 import kyc.model.Nom;
-import java.util.List;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.List;
 
-
-public class SuppAcc extends Pretraitement {
-
+public class SuppAcc implements Pretraitement {
     @Override
-    public List<String> traiter(List<String> input) {
+    public List<String> traiter(Nom nom) {
+        List<String> tokens = nom.getNomPretraite().isEmpty()
+                ? List.of(nom.getNomBrut().trim().split("\\s+"))
+                : nom.getNomPretraite();
+
         List<String> result = new ArrayList<>();
-
-        for (String s : input) {
+        for (String s : tokens) {
             if (s != null) {
-                
                 String normalized = Normalizer.normalize(s, Normalizer.Form.NFD);
-
-                
-                String withoutAccents = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-
-                result.add(withoutAccents);
-            } else {
-                result.add(null);
+                result.add(normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", ""));
             }
         }
-
         return result;
     }
 }
