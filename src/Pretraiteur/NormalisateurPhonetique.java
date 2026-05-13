@@ -1,39 +1,11 @@
-package kyc.Pretraitement;
+package Pretraitement;
 
-import kyc.model.Nom;
+import model.Nom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Normalizes phonetic and transliteration variants of names.
- *
- * Problem it solves:
- *   Arabic, Hebrew, and other names transliterated to latin script
- *   have no single standard — the same name can appear many ways:
- *     MOHAMMED / MOHAMED / MUHAMMED / MOHAMAD → all collapse to MOHAMMAD
- *     YOUSSEF  / YOUSEF  / YUSUF             → all collapse to YUSUF
- *
- *   Without this step, Levenshtein and JaroWinkler catch some variants
- *   but not all — especially when the edit distance is large.
- *
- * Runs after Normalisation so tokens are already uppercase.
- *
- * Strategy: rule-based normalization using a canonical form map.
- * Each key is a known variant, the value is the canonical form.
- *
- * Pipeline position: after Normalisation, before Decomposeur
- *   Nettoyeur → SuppAcc → Normalisation → NormalisateurPhonetique → Decomposeur
- */
 public class NormalisateurPhonetique implements Pretraitement {
-
-    /**
-     * Maps known transliteration variants to a single canonical form.
-     * All keys and values are uppercase.
-     *
-     * Covers common Arabic, Hebrew, and cross-language variants
-     * frequently found in international sanctions lists.
-     */
     private static final Map<String, String> VARIANTES = Map.ofEntries(
             // Mohammed variants
             Map.entry("MOHAMMED",  "MOHAMMAD"),
@@ -96,7 +68,6 @@ public class NormalisateurPhonetique implements Pretraitement {
 
         List<String> result = new ArrayList<>();
         for (String token : tokens) {
-            // Replace with canonical form if a variant is known, otherwise keep as is
             result.add(VARIANTES.getOrDefault(token, token));
         }
         return result;
