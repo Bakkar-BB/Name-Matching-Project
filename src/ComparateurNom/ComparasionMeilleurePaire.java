@@ -1,8 +1,8 @@
-package kyc.comparateur;
+package comparateur;
 
 import java.util.List;
 
-public class ComparateurMeilleurPaire implements ComparateurNom {
+public class ComparateurMeilleurPaire implements Comparateur{
 
     private final ComparateurChaine comparateurChaine;
 
