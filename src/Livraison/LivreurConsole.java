@@ -1,7 +1,7 @@
-package kyc.livraison;
+package livraison;
 
-import kyc.model.Nom;
-import kyc.model.ResultatComparaison;
+import model.Nom;
+import model.ResultatComparaison;
 import java.util.List;
 
 public class LivreurConsole implements Livreur {
