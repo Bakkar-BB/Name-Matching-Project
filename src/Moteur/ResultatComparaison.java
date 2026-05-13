@@ -16,6 +16,7 @@ public class ResultatComparaison {
         this.score = score;
         this.source = source;
     }
+    public double getScore() { return score; }
 
     public boolean estAuDessousDuSeuil(double seuil) { return score < seuil; }
     public boolean estAuDessus(double seuil) { return score >= seuil; }
