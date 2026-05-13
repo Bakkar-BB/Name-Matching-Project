@@ -13,7 +13,7 @@ public class TopKSelection implements Selectionneur {
     @Override
     public List<ResultatComparaison> filtrer(List<ResultatComparaison> resultats) {
         return resultats.stream()
-                .sorted(Comparator.comparingDouble(ResultatComparaison::score).reversed())
+               .sorted(Comparator.comparingDouble(r -> r.getScore()).reversed())
                 .limit(k)
                 .collect(Collectors.toList());
     }
