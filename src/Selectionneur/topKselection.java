@@ -1,6 +1,6 @@
-package kyc.selection;
+package Selectionneur;
 
-import kyc.model.ResultatComparaison;
+import Model.ResultatComparaison;
 
 import java.util.Comparator;
 import java.util.List;
