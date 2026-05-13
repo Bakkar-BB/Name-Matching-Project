@@ -20,19 +20,14 @@ public class ComparateurOrdrePositionnel implements ComparateurNom {
 
         double scoreTotal = 0.0;
 
-        // Compare only up to the shorter name's length — position by position
         for (int i = 0; i < minLen; i++) {
             double score = comparateurChaine.comparer(tokens1.get(i), tokens2.get(i));
 
-            // Positional weight: first tokens matter more than last tokens
-            // position 0 → weight maxLen, position 1 → weight maxLen-1, etc.
+            
             double poids = maxLen - i;
 
             scoreTotal += score * poids;
         }
-
-        // Normalize by the sum of all positional weights including unmatched positions
-        // This penalizes names of different lengths
         double poidsTotal = 0.0;
         for (int i = 0; i < maxLen; i++) {
             poidsTotal += maxLen - i;
