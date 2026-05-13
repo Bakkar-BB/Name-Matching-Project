@@ -1,6 +1,6 @@
-package ComparateurChaine;
+package Comparateur;
 
-public class Livenshtein implements ComparateurChaine{
+public class Livenshtein implements Comparateur{
     @Override
     public double comparer(String s1, String s2){
         if (s1 == null || s2 == null) return 0.0;
