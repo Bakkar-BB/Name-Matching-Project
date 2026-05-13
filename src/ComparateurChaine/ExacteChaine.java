@@ -1,6 +1,6 @@
-package ComparateurChaine;
+package Comparateur;
 
-public class ExacteChaine implements ComparateurChaine{
+public class ExacteChaine implements Comparateur{
     @Override
     public double comparer(String s1, String s2){
         if (s1 == null || s2==null) {
