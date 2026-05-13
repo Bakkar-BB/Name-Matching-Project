@@ -1,10 +1,10 @@
-package kyc.Pretraitement;
+package Pretraiteur;
  
-import kyc.model.Nom;
+import model.Nom;
 import java.util.Arrays;
 import java.util.List;
 
-public class Decomposeur implements Pretraitement {
+public class Decomposeur implements Pretraiteur{
  
     private static final List<String> PARTICULES = List.of(
             // French
