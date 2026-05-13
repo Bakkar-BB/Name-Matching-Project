@@ -2,27 +2,41 @@ package kyc.comparateur;
 
 import java.util.List;
 
-public class ComparasionMeilleurePaire implements ComparateurNom {
+public class ComparateurMeilleurPaire implements ComparateurNom {
 
     private final ComparateurChaine comparateurChaine;
 
-    public ComparasionMeilleurePaire(ComparateurChaine comparateurChaine) {
+    public ComparateurMeilleurPaire(ComparateurChaine comparateurChaine) {
         this.comparateurChaine = comparateurChaine;
     }
 
     @Override
     public double comparer(List<String> tokens1, List<String> tokens2) {
-        if (tokens1 == null || tokens1.isEmpty()
-         || tokens2 == null || tokens2.isEmpty()) return 0.0;
+        if (tokens1 == null || tokens2 == null) return 0.0;
+        if (tokens1.isEmpty() || tokens2.isEmpty()) return 0.0;
 
-        double totalMeilleurscore = 0.0;
-        for (String t1 : tokens1) {
-            double bestMatch = 0.0;
-            for (String t2 : tokens2) {
-                bestMatch = Math.max(bestMatch, comparateurChaine.comparer(t1, t2));
+        double scoreGauche = scorePondere(tokens1, tokens2); 
+        double scoreDroite = scorePondere(tokens2, tokens1); 
+        return (scoreGauche + scoreDroite) / 2.0;
+    }
+    private double scorePondere(List<String> source, List<String> cible) {
+        double scoreTotal = 0.0;
+        double poidsTotal = 0.0;
+
+        for (String tokenSource : source) {
+            double meilleurScore = 0.0;
+
+            for (String tokenCible : cible) {
+                double score = comparateurChaine.comparer(tokenSource, tokenCible);
+                if (score > meilleurScore) {
+                    meilleurScore = score;
+                }
             }
-            totalMeilleurscore += bestMatch; 
+            double poids = tokenSource.length();
+            scoreTotal += meilleurScore * poids;
+            poidsTotal += poids;
         }
-        return totalMeilleurscore / tokens1.size();
+
+        return poidsTotal > 0 ? scoreTotal / poidsTotal : 0.0;
     }
 }
