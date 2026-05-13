@@ -8,7 +8,11 @@ class Nom {
     public Nom(String valeur) { this.valeur = valeur; }
 
     @Override
-    public String toString() { return valeur; }
+    public String toString() {
+         return String.format("[%.2f] %s → %s (source: %s)",
+            score, nomClient.getNomBrut(), nomTrouve, source);
+    }
+   
 }
 
 class ResultatComparaison {
