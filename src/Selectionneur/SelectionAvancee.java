@@ -1,7 +1,7 @@
 package Selectionneur;
 import java.util.List;
 import Moteur.ResultatComparaison;
-public class SelectionAvancee implements Selectionneur{
+public  class SelectionAvancee implements Selectionneur{
 
     public final double seuil;
     public final String sourcePrioritaire;

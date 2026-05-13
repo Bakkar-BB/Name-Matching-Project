@@ -1,8 +1,9 @@
 import Moteur.ListeControle;
+import Moteur.EntreeList;
 import Moteur.Nom;
 import Moteur.ResultatComparaison;
-import Moteur.EntreeList;
 import Pretraiteur.Netyoeur;
+import ComparateurChaine.JaroWinkler;
 import ComparateurNom.ComparateurMeilleurPaire;
 import Selectionneur.SelectionAvancee;
 import Livraison.LivreurCSV;
@@ -13,14 +14,13 @@ import java.util.List;
 
 public class Main {
 
-    // Seuil de similarité (0.0 → 1.0)
-    private static final double SEUIL        = 0.75;
-    private static final String SOURCE_PRIO  = "OFAC";
-    private static final String SORTIE_CSV   = "resultats_kyc.csv";
+    private static final double seuil       = 0.75;
+    private static final String source_prio = "OFAC";
+    private static final String sortie_csv  = "resultats_kyc.csv";
 
     public static void main(String[] args) {
 
-        // 1. Chargement de la liste de contrôle
+        // 1. Chargement liste de contrôle
         List<ListeControle> listes;
         if (args.length > 0) {
             try {
@@ -37,15 +37,11 @@ public class Main {
             System.out.println("Mode démonstration — liste embarquée utilisée.");
         }
 
-        // 2. Initialisation des composants du pipeline
-        Netyoeur            pretraiteur  = new Netyoeur();
-        ComparateurMeilleurPaire comparateur = new ComparateurMeilleurPaire(
-                (t1, t2) -> {
-                    return jaccardSimple(t1, t2);
-                }   // comparateur de chaînes léger
-        );
-        SelectionAvancee    selecteur    = new SelectionAvancee(SEUIL, SOURCE_PRIO);
-        LivreurCSV          livreur      = new LivreurCSV(SORTIE_CSV);
+        // 2. Pipeline
+        Netyoeur             pretraiteur = new Netyoeur();
+        ComparateurMeilleurPaire comparateur = new ComparateurMeilleurPaire(new JaroWinkler());
+        SelectionAvancee     selecteur   = new SelectionAvancee(seuil, source_prio);
+        LivreurCSV           livreur     = new LivreurCSV(sortie_csv);
 
         // 3. Clients à vérifier
         List<Nom> clients = List.of(
@@ -57,14 +53,13 @@ public class Main {
         // 4. Exécution
         System.out.println("\n========== Résultats KYC/AML ==========");
         for (Nom client : clients) {
-            List<String> tokensClient = pretraiteur.traiter(client);
-            client.setNomPretraite(tokensClient);
+            client.setNomPretraite(pretraiteur.traiter(client));
 
-            List<ResultatComparaison> alertes = new ArrayList<>();
+            List<ResultatComparaison> candidats = new ArrayList<>();
 
             for (ListeControle liste : listes) {
                 for (EntreeList entree : liste.entrees) {
-                    Nom nomEntree = new Nom(entree.nom, entree.id);
+                    Nom nomEntree = new Nom(entree.nomBrut, entree.id);
                     nomEntree.setNomPretraite(pretraiteur.traiter(nomEntree));
 
                     double score = comparateur.comparer(
@@ -72,59 +67,40 @@ public class Main {
                             nomEntree.getNomPretraite()
                     );
 
-                    alertes.add(new ResultatComparaison(
+                    candidats.add(new ResultatComparaison(
                             entree.id,
                             client,
-                            entree.nom,
+                            entree.nomBrut,
                             score,
                             entree.source
                     ));
                 }
             }
 
-            // Filtrage par seuil + tri
-            List<ResultatComparaison> alertesFiltrees = selecteur.filtrer(alertes);
+            // Filtrage + tri par seuil
+            List<ResultatComparaison> alertes = selecteur.filtrer(candidats);
 
-            if (alertesFiltrees.isEmpty()) {
+            if (alertes.isEmpty()) {
                 System.out.println("✓ " + client.getNomBrut() + " — aucune alerte.");
             } else {
-                System.out.println("⚠ " + client.getNomBrut() + " — " + alertesFiltrees.size() + " alerte(s) :");
-                for (ResultatComparaison r : alertesFiltrees) {
-                    System.out.printf("   [%s] %s  score=%.3f  source=%s%n",
+                System.out.println("⚠  " + client.getNomBrut()
+                        + " — " + alertes.size() + " alerte(s) :");
+                for (ResultatComparaison r : alertes) {
+                    System.out.printf("     [%s] %-25s  score=%.3f  source=%s%n",
                             r.idEntreeListe, r.nomTrouve, r.score, r.source);
                 }
-                livreur.livrer(alertesFiltrees);
+                livreur.livrer(alertes);
             }
         }
-        System.out.println("\nRésultats exportés → " + SORTIE_CSV);
+        System.out.println("\nRésultats exportés → " + sortie_csv);
     }
 
-    // Comparateur de chaînes simple (Jaccard sur caractères bigrammes)
-    private static double jaccardSimple(String a, String b) {
-        if (a == null || b == null) return 0.0;
-        if (a.equals(b)) return 1.0;
-        java.util.Set<String> sa = bigrammes(a);
-        java.util.Set<String> sb = bigrammes(b);
-        if (sa.isEmpty() || sb.isEmpty()) return 0.0;
-        long inter = sa.stream().filter(sb::contains).count();
-        long union = sa.size() + sb.size() - inter;
-        return (double) inter / union;
-    }
-
-    private static java.util.Set<String> bigrammes(String s) {
-        java.util.Set<String> set = new java.util.HashSet<>();
-        for (int i = 0; i < s.length() - 1; i++)
-            set.add(s.substring(i, i + 2));
-        return set;
-    }
-
-    // Données de démonstration
     private static List<ListeControle> exempleListeControle() {
         return List.of(new ListeControle("demo", List.of(
-                new EntreeList("001", "Ben Laden Usama",    "OFAC"),
-                new EntreeList("002", "Bin Ladin Osama",    "ONU"),
-                new EntreeList("003", "Al Qahtani Mohammed","EU"),
-                new EntreeList("004", "Dupont Alice Marie", "LOCAL")
+                new EntreeList("001", "Ben Laden Usama",     "OFAC"),
+                new EntreeList("002", "Bin Ladin Osama",     "ONU"),
+                new EntreeList("003", "Al Qahtani Mohammed", "EU"),
+                new EntreeList("004", "Dupont Alice Marie",  "LOCAL")
         )));
     }
 }
