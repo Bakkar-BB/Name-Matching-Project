@@ -1,7 +1,7 @@
-package ComparateurChaine;
+package Comparateur;
 
-public class JaroWinkler implements ComparateurChaine{
-    private static final double P = 0.1; // facteur de préfixe Winkler
+public class JaroWinkler implements Comparateur{
+    private static final double P = 0.1;
 
     @Override
     public double comparer(String s1, String s2) {
