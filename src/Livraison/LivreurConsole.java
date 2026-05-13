@@ -1,60 +1,34 @@
-package livraison;
+package kyc.livraison;
 
+import kyc.model.Nom;
+import kyc.model.ResultatComparaison;
 import java.util.List;
-
-class Nom {
-    private String valeur;
-
-    public Nom(String valeur) { this.valeur = valeur; }
-
-    @Override
-    public String toString() {
-         return String.format("[%.2f] %s → %s (source: %s)",
-            score, nomClient.getNomBrut(), nomTrouve, source);
-    }
-   
-}
-
-class ResultatComparaison {
-    private String nom;
-    private double score;
-    private String source;
-
-    public ResultatComparaison(String nom, double score, String source) {
-        this.nom = nom;
-        this.score = score;
-        this.source = source;
-    }
-
-    public String getNom() { return nom; }
-    public double getScore() { return score; }
-    public String getSource() { return source; }
-
-    @Override
-    public String toString() {
-        return nom + " | score=" + score + " | source=" + source;
-    }
-}
-
-
 
 public class LivreurConsole implements Livreur {
 
     @Override
     public void livrer(List<ResultatComparaison> resultats) {
+        if (resultats == null || resultats.isEmpty()) {
+            System.out.println("=== Aucun résultat trouvé ===");
+            return;
+        }
         System.out.println("=== Résultats ===");
         for (ResultatComparaison r : resultats) {
-            System.out.println(r);
+            System.out.println(r); // uses ResultatComparaison.toString()
         }
     }
 
     @Override
     public void livrerAvecDetails(Nom nom, List<ResultatComparaison> resultats) {
-        System.out.println("=== Résultats pour : " + nom + " ===");
+        if (resultats == null || resultats.isEmpty()) {
+            System.out.println("=== Aucun résultat pour : " + nom.getNomBrut() + " ===");
+            return;
+        }
+        System.out.println("=== Résultats pour : " + nom.getNomBrut() + " ===");
         for (ResultatComparaison r : resultats) {
-            System.out.println("  Nom    : " + r.getNom());
-            System.out.println("  Score  : " + r.getScore());
-            System.out.println("  Source : " + r.getSource());
+            System.out.println("  Nom    : " + r.nomTrouve);
+            System.out.println("  Score  : " + String.format("%.2f", r.score));
+            System.out.println("  Source : " + r.source);
             System.out.println("  --------");
         }
     }
