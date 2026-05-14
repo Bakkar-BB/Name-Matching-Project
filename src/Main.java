@@ -294,7 +294,6 @@ public class Main {
         }
     }
 
-    // ── Affichage temps ──────────────────────────────────
     private void afficherTempsChargement(long dureeMs, int taille) {
         System.out.println("┌─────────────────────────────────────┐");
         System.out.printf( "│   Temps de chargement : %6d ms   │%n", dureeMs);
@@ -310,7 +309,6 @@ public class Main {
         System.out.println("└─────────────────────────────────────┘");
     }
 
-    // ── Export CSV ───────────────────────────────────────
     private void proposerExport(List<ResultatComparaison> resultats) {
         if (resultats == null || resultats.isEmpty()) return;
         String rep = lireChaine("\nExporter en CSV ? (o/n) : ");
