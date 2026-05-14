@@ -1,9 +1,8 @@
-package kyc.comparateur;
+package comparateur;
 
 import java.util.List;
 
 public class ComparateurOrdrePositionnel implements ComparateurNom {
-
     private final ComparateurChaine comparateurChaine;
 
     public ComparateurOrdrePositionnel(ComparateurChaine comparateurChaine) {
@@ -19,15 +18,12 @@ public class ComparateurOrdrePositionnel implements ComparateurNom {
         int maxLen = Math.max(tokens1.size(), tokens2.size());
 
         double scoreTotal = 0.0;
-
         for (int i = 0; i < minLen; i++) {
             double score = comparateurChaine.comparer(tokens1.get(i), tokens2.get(i));
-
-            
             double poids = maxLen - i;
-
             scoreTotal += score * poids;
         }
+
         double poidsTotal = 0.0;
         for (int i = 0; i < maxLen; i++) {
             poidsTotal += maxLen - i;
