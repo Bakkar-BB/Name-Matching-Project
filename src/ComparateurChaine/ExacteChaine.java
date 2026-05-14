@@ -1,4 +1,4 @@
-package comparateur;
+package ComparateurChaine;
 
 public class ExacteChaine implements ComparateurChaine {
     @Override
