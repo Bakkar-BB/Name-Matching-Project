@@ -1,6 +1,6 @@
-package Comparateur;
+package comparateur;
 
-public class JaroWinkler implements Comparateur{
+public class JaroWinkler implements ComparateurChaine {
     private static final double P = 0.1;
 
     @Override
