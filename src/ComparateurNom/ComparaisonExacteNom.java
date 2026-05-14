@@ -2,22 +2,8 @@ package comparateur;
 
 import java.util.List;
 
-interface ComparateurChaine {
-    double comparer(String s1, String s2);
-}
-
-
-class ExacteChaine implements ComparateurChaine {
-    @Override
-    public double comparer(String s1, String s2) {
-        if (s1 == null || s2 == null) return 0.0;
-        return s1.equalsIgnoreCase(s2) ? 1.0 : 0.0;
-    }
-}
-
 public class ComparaisonExacteNom implements ComparateurNom {
-
-    private ComparateurChaine comparateurChaine;
+    private final ComparateurChaine comparateurChaine;
 
     public ComparaisonExacteNom() {
         this.comparateurChaine = new ExacteChaine();
@@ -25,8 +11,9 @@ public class ComparaisonExacteNom implements ComparateurNom {
 
     @Override
     public double comparer(List<String> tokens1, List<String> tokens2) {
-        if (tokens1 == null || tokens2 == null || tokens1.isEmpty() || tokens2.isEmpty())
+        if (tokens1 == null || tokens2 == null || tokens1.isEmpty() || tokens2.isEmpty()) {
             return 0.0;
+        }
 
         int matches = 0;
         int total = Math.max(tokens1.size(), tokens2.size());
@@ -39,6 +26,7 @@ public class ComparaisonExacteNom implements ComparateurNom {
                 }
             }
         }
-        return (double) matches / total;
+
+        return total == 0 ? 0.0 : (double) matches / total;
     }
 }
