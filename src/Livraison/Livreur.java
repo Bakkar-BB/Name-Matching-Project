@@ -1,9 +1,8 @@
-package Livraison;
-
-import Moteur.Nom;
-import Moteur.ResultatComparaison;
+package livreur;
 
 import java.util.List;
+import model.Nom;
+import model.ResultatComparaison;
 
 public interface Livreur {
     void livrer(List<ResultatComparaison> resultats);
