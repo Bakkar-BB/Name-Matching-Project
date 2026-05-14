@@ -7,12 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Génère des candidats par correspondance phonétique Soundex.
- * Chaque token du nom client est encodé en Soundex,
- * et tout nom de la liste partageant au moins un code Soundex commun
- * est retenu comme candidat.
- */
+
 public class GenerateurCandidatsSoundex extends AbstractCandidateGenerator {
 
     private final List<Nom> listeSanctions;
@@ -23,7 +18,7 @@ public class GenerateurCandidatsSoundex extends AbstractCandidateGenerator {
 
     @Override
     public List<Nom> generateCandidates(Nom nomClient) {
-        // Codes Soundex de tous les tokens du client
+        
         Set<String> codesClient = new HashSet<>();
         for (String token : getTokens(nomClient)) {
             codesClient.add(soundex(token));
@@ -35,7 +30,7 @@ public class GenerateurCandidatsSoundex extends AbstractCandidateGenerator {
             for (String token : getTokens(sanction)) {
                 if (codesClient.contains(soundex(token))) {
                     resultats.add(sanction);
-                    break; // un token suffisant, on passe au suivant
+                    break; 
                 }
             }
         }
@@ -43,7 +38,7 @@ public class GenerateurCandidatsSoundex extends AbstractCandidateGenerator {
         return resultats;
     }
 
-    // ── Algorithme Soundex ───────────────────────────────
+
     public static String soundex(String mot) {
         if (mot == null || mot.isBlank()) return "";
         mot = mot.trim().toUpperCase();
