@@ -1,24 +1,24 @@
-package kyc.Pretraitement;
-import kyc.model.Nom;
+package pretraitement;
+
+import java.util.ArrayList;
 import java.util.List;
+import model.Nom;
 
 public class Normalisation implements Pretraitement {
     @Override
     public List<String> traiter(Nom nom) {
-        
-        String source = nom.getNomPretraite().isEmpty() 
-                        ? nom.getNomBrut() 
-                        : String.join(" ", nom.getNomPretraite());
+        List<String> source = nom.getNomPretraite();
+        if (source.isEmpty()) {
+            source = List.of(nom.getNomBrut());
+        }
 
-        String[] words = source.trim().split("\\s+");
-        
-        List<String> result = new java.util.ArrayList<>();
-        for (String word : words) {
-            String clean = word.trim().toUpperCase();
-            if (!clean.isBlank()) {
-                result.add(clean);
+        List<String> result = new ArrayList<>();
+        for (String token : source) {
+            if (token != null && !token.isBlank()) {
+                result.add(token.toUpperCase());
             }
         }
         return result;
     }
 }
+
