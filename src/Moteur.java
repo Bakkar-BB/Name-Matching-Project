@@ -19,7 +19,6 @@ public class Moteur {
     private final List<Nom> listeSanctions;
     private final GenerateurCandidatsInvertedIndex generateurCandidats;
 
-    // Temps de chargement de la liste — accessible après construction
     private final long tempsChargementMs;
 
     public Moteur(Configuration configuration, List<Nom> listeSanctions) {
@@ -28,7 +27,6 @@ public class Moteur {
 
         long debut = System.nanoTime();
 
-        // Prétraitement de la liste de sanctions — une seule fois
         this.listeSanctions = new ArrayList<>();
         for (Nom sanction : listeSanctions) {
             Nom copie = new Nom(sanction.getNomBrut(), sanction.getIdNom());
@@ -36,7 +34,6 @@ public class Moteur {
             this.listeSanctions.add(copie);
         }
 
-        // Construction de l'index inversé — une seule fois
         this.generateurCandidats = new GenerateurCandidatsInvertedIndex(this.listeSanctions, DEFAULT_MIN_TOKENS_COMMUNS);
 
         long fin = System.nanoTime();
