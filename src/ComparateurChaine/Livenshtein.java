@@ -1,4 +1,4 @@
-package comparateur;
+package ComparateurChaine;
 
 public class Levenshtein implements ComparateurChaine {
     @Override
