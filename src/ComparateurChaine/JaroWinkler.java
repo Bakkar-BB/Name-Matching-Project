@@ -1,4 +1,4 @@
-package comparateur;
+package ComparateurChaine;
 
 public class JaroWinkler implements ComparateurChaine {
     private static final double P = 0.1;
