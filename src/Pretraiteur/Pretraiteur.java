@@ -1,6 +1,8 @@
-package Pretraiteur;
+package pretraitement;
+
 import java.util.List;
-import Moteur.Nom;
-public interface Pretraiteur {
+import model.Nom;
+
+public interface Pretraitement {
     List<String> traiter(Nom nom);
 }
