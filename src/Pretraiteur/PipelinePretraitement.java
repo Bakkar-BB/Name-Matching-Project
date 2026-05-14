@@ -1,10 +1,11 @@
-package Pretraitement;
+package pretraitement;
 
-import model.Nom;
 import java.util.List;
+import model.Nom;
 
 public class PipelinePretraitement {
     private final List<Pretraitement> etapes;
+
     public PipelinePretraitement() {
         this.etapes = List.of(
                 new Nettoyeur(),
@@ -14,14 +15,20 @@ public class PipelinePretraitement {
                 new Decomposeur()
         );
     }
+
     public PipelinePretraitement(List<Pretraitement> etapes) {
-        this.etapes = etapes;
+        this.etapes = List.copyOf(etapes);
     }
+
+    public List<Pretraitement> getEtapes() {
+        return etapes;
+    }
+
     public Nom traiter(Nom nom) {
+        Nom courant = nom;
         for (Pretraitement etape : etapes) {
-            List<String> resultat = etape.traiter(nom);
-            nom.setNomPretraite(resultat);
+            courant.setNomPretraite(etape.traiter(courant));
         }
-        return nom;
+        return courant;
     }
 }
