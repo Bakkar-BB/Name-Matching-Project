@@ -4,26 +4,19 @@ import model.Nom;
 
 import java.util.*;
 
-/**
- * Génère des candidats via un VP-Tree (Vantage Point Tree) basé sur
- * la distance de Levenshtein sur les noms normalisés (tokens triés).
- *
- * L'arbre est construit une seule fois au constructeur.
- * Lors de la recherche, tous les Noms dont la distance ≤ maxDistance
- * sont retournés comme candidats.
- */
+
 public class GenerateurCandidatsArbre extends AbstractCandidateGenerator {
 
     private final int maxDistance;
     private final Node root;
 
-    // ── Nœud interne du VP-Tree ──────────────────────────
+
     private static class Node {
-        final String cle;     // nom normalisé (tokens triés + joints)
-        final Nom    nom;     // référence au Nom original
-        double       mu;      // médiane des distances (seuil de partition)
-        Node         left;    // sous-arbre : distance ≤ mu
-        Node         right;   // sous-arbre : distance > mu
+        final String cle;     
+        final Nom    nom;  
+        double       mu;
+        Node         left;    
+        Node         right;   
 
         Node(String cle, Nom nom) {
             this.cle = cle;
@@ -31,17 +24,17 @@ public class GenerateurCandidatsArbre extends AbstractCandidateGenerator {
         }
     }
 
-    // ── Constructeur ────────────────────────────────────
+   
     public GenerateurCandidatsArbre(List<Nom> listeSanctions, int maxDistance) {
         this.maxDistance = Math.max(0, maxDistance);
         this.root        = construire(listeSanctions);
     }
 
-    // ── Construction du VP-Tree ──────────────────────────
+    
     private Node construire(List<Nom> noms) {
         if (noms == null || noms.isEmpty()) return null;
 
-        // Dédoublonnage sur la clé normalisée
+        
         Map<String, Nom> map = new LinkedHashMap<>();
         for (Nom n : noms) {
             map.putIfAbsent(normaliser(n), n);
@@ -53,24 +46,23 @@ public class GenerateurCandidatsArbre extends AbstractCandidateGenerator {
         if (cles.isEmpty()) return null;
         if (cles.size() == 1) return new Node(cles.get(0), map.get(cles.get(0)));
 
-        // Le premier élément est le vantage point
+       
         String vpCle = cles.get(0);
         Node   node  = new Node(vpCle, map.get(vpCle));
 
         List<String> reste = cles.subList(1, cles.size());
 
-        // Calcul des distances depuis le vantage point
+       
         int[] distances = new int[reste.size()];
         for (int i = 0; i < reste.size(); i++) {
             distances[i] = levenshtein(vpCle, reste.get(i));
         }
 
-        // La médiane devient le seuil mu
+   
         int[] tries = distances.clone();
         Arrays.sort(tries);
         node.mu = tries[tries.length / 2];
 
-        // Partition gauche (≤ mu) et droite (> mu)
         List<String> gauche = new ArrayList<>();
         List<String> droite = new ArrayList<>();
         for (int i = 0; i < reste.size(); i++) {
@@ -83,7 +75,7 @@ public class GenerateurCandidatsArbre extends AbstractCandidateGenerator {
         return node;
     }
 
-    // ── Recherche dans le VP-Tree ────────────────────────
+
     @Override
     public List<Nom> generateCandidates(Nom nomClient) {
         List<Nom> resultats = new ArrayList<>();
@@ -97,19 +89,19 @@ public class GenerateurCandidatsArbre extends AbstractCandidateGenerator {
         int dist = levenshtein(node.cle, requete);
         if (dist <= maxDistance) resultats.add(node.nom);
 
-        // Élagage : on explore les branches selon la distance
+
         if (dist - maxDistance <= node.mu) rechercherNode(node.left,  requete, resultats);
         if (dist + maxDistance >  node.mu) rechercherNode(node.right, requete, resultats);
     }
 
-    // ── Normalisation : tokens triés et joints ───────────
+
     private String normaliser(Nom nom) {
         List<String> tokens = new ArrayList<>(getTokens(nom));
         Collections.sort(tokens);
         return String.join(" ", tokens);
     }
 
-    // ── Distance de Levenshtein ──────────────────────────
+ 
     private static int levenshtein(String a, String b) {
         int la = a.length(), lb = b.length();
         int[][] dp = new int[la + 1][lb + 1];
