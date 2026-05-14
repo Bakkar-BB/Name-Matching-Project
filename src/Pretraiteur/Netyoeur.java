@@ -1,25 +1,23 @@
-package Pretraiteur;
+package pretraitement;
 
-
-import Moteur.Nom;
-
-import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Pattern;
-public class Netyoeur implements  Pretraiteur{
+import model.Nom;
+
+public class Nettoyeur implements Pretraitement {
     @Override
-    public List<String> traiter (Nom nom){
+    public List<String> traiter(Nom nom) {
+        if (nom == null || nom.getNomBrut() == null) return List.of();
         String texte = nom.getNomBrut()
                 .replaceAll("-", " ")
-                .replaceAll("[^\\p{L}\\s]", "")   // garde uniquement lettres + espaces
+                .replaceAll("[^\\p{L}\\s]", " ")
                 .replaceAll("\\s+", " ")
                 .trim()
-                .toLowerCase();
-        return split(texte);
-    }
-    private List<String> split(String s) {
-        if (s.isBlank()) return List.of();
-        return Arrays.asList(s.split("\\s+"));
+                .toUpperCase();
+        if (texte.isBlank()) {
+            return List.of();
+        }
+        return Arrays.asList(texte.split("\\s+"));
     }
 }
+
